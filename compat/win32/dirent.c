@@ -20,7 +20,7 @@ static inline void finddata2dirent(struct dirent *ent, WIN32_FIND_DATAW *fdata)
 
 DIR *opendir(const char *name)
 {
-	wchar_t pattern[MAX_PATH + 2]; /* + 2 for '/' '*' */
+	wchar_t pattern[MAX_PATH_EX + 2]; /* + 2 for '/' '*' */
 	WIN32_FIND_DATAW fdata;
 	HANDLE h;
 	int len;

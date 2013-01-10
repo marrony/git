@@ -75,6 +75,8 @@ struct itimerval {
  */
 #undef HELP_COMMAND /* from winuser.h */
 
+#define MAX_PATH_EX (32*1024)
+
 /*
  * trivial stubs
  */
@@ -392,15 +394,31 @@ static inline int xutftowcs(wchar_t *wcs, const char *utf, size_t wcslen)
 
 /**
  * Simplified file system specific variant of xutftowcsn, assumes output
- * buffer size is MAX_PATH wide chars and input string is \0-terminated,
+ * buffer size is MAX_PATH_EX wide chars and input string is \0-terminated,
  * fails with ENAMETOOLONG if input string is too long.
  */
 static inline int xutftowcs_path(wchar_t *wcs, const char *utf)
 {
-	int result = xutftowcsn(wcs, utf, MAX_PATH, -1);
+	int result = xutftowcsn(wcs, utf, MAX_PATH_EX, -1);
 	if (result < 0 && errno == ERANGE)
 		errno = ENAMETOOLONG;
 	return result;
+}
+
+/**
+ * 
+ */
+int fix_long_path(wchar_t* path);
+
+/**
+ * 
+ */
+static inline int xutftowcs_path_fix(wchar_t *wcs, const char *utf)
+{
+	int result = xutftowcs_path(wcs, utf);
+	if(result < 0) return result;
+	
+	return fix_long_path(wcs);
 }
 
 /**
